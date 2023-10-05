@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import CardOption from '@/components/CardOption.vue';
 
-const options = [
-  'this',
-  'that',
-];
+defineProps({
+  options: {
+    type: Object,
+    required: true,
+  },
+})
 </script>
 
 <template>
@@ -12,7 +14,7 @@ const options = [
     <card-option
         v-for="option in options"
         :key="option"
-        :text="option"
+        :text="option.text"
     />
   </div>
 </template>
@@ -21,5 +23,10 @@ const options = [
 .this-that-section {
   display: flex;
   gap: 6%;
+}
+
+.dialog {
+  background-color: #fff;
+  border: white 1px solid;
 }
 </style>
