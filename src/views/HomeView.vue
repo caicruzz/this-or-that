@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import CardOption from '../components/CardOption.vue';
+import ThisThatSection from '@/components/ThisThatSection.vue';
 
-const options = [
-  'this',
-  'that',
-];
 </script>
 
 <template>
-    <div class="home">
-        <div class="options">
-            <card-option v-for="option in options" :key="option" :text="option" />
-        </div>
-    </div>
+  <div class="home">
+    <ThisThatSection class="section" />
+    <ThisThatSection class="section" />
+  </div>
 </template>
 
 <style scoped>
 .home {
+  padding: 5% 30%;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   height: 100%;
+}
+
+.section {
+  margin: 20px 0;
 }
 </style>
