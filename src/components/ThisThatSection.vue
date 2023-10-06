@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import CardOption from '@/components/CardOption.vue';
 
-defineProps({
-  options: {
-    type: Object,
-    required: true,
-  },
-})
+type thisThatOption = {
+  text: string;
+  isActive: boolean;
+}
+
+type Props = {
+  options: { this: thisThatOption, that: thisThatOption };
+}
+
+const props = defineProps<Props>()
 </script>
 
 <template>
   <div class="this-that-section">
     <card-option
-        v-for="option in options"
-        :key="option"
-        :text="option.text"
+        v-for="option in props.options"
+        :key="option.text"
+        :thisThatOption="option"
     />
   </div>
 </template>

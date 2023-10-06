@@ -1,60 +1,93 @@
 <script setup lang="ts">
 import ThisThatSection from '@/components/ThisThatSection.vue';
-import {ref} from "vue";
+import { onMounted, ref, watch } from 'vue';
 
+type thisThatOption = {
+  text: string;
+  isActive: boolean;
+};
+
+type options = {
+  this: thisThatOption;
+  that: thisThatOption;
+};
+
+const maxOptions = 5;
 const isDialogOpen = ref(false);
-
-const optionsList = ref([
+const optionsList = ref<options[]>([
   {
-    This: { text: 'This' },
-    That: { text: 'That' },
-  },
+    this: { text: 'This', isActive: false },
+    that: { text: 'That', isActive: false }
+  }
 ]);
 
+watch(optionsList.value, () => {
+  const options = JSON.stringify(optionsList.value);
+  localStorage.setItem('options', options);
+});
+
+onMounted(() => {
+  const options = localStorage.getItem('options');
+  if (options) {
+    optionsList.value = JSON.parse(options);
+  }
+});
+
 function setIsDialogOpen(value: boolean) {
-  isDialogOpen.value = value
+  isDialogOpen.value = value;
+}
+
+function addThisThatSection() {
+  optionsList.value.push({
+    this: { text: 'This', isActive: false },
+    that: { text: 'That', isActive: false }
+  });
+}
+
+function removeThisThatSection(index: number) {
+  optionsList.value.splice(index, 1);
 }
 </script>
 
 <template>
   <div class="home">
-    <v-btn
-        color="primary"
-        @click="setIsDialogOpen(true)"
-    >
-      Edit Options
-    </v-btn>
+    <v-btn color="primary" @click="setIsDialogOpen(true)"> Edit Options </v-btn>
     <ThisThatSection
-        v-for="(options, index) in optionsList"
-        :key="index"
-        :options="options"
-        class="section"
+      v-for="(options, index) in optionsList"
+      :key="index"
+      :options="options"
+      class="section"
     />
   </div>
 
   <v-dialog width="500" v-model="isDialogOpen">
     <v-card title="Edit your options">
+      <v-btn
+        color="primary"
+        :disabled="optionsList.length >= maxOptions"
+        @click="addThisThatSection()"
+      >
+        +
+      </v-btn>
       <v-card-text>
-          <div
-              v-for="(options, index) in optionsList"
-              :key="index"
-              class="form-dialog"
-          >
-              <v-text-field
-                  v-for="(option, index) in options"
-                  :key="index"
-                  v-model="option.text"
-                  :label="option.text"
-                  required
-              ></v-text-field>
-          </div>
+        <div v-for="(options, index) in optionsList" :key="index" class="form-dialog">
+          <v-text-field
+            v-for="(option, index) in options"
+            :key="index"
+            v-model="option.text"
+            :label="option.text"
+            required
+          ></v-text-field>
+          <v-btn color="primary" @click="removeThisThatSection(index)"> Delete </v-btn>
+        </div>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-            text="Close Dialog"
-            @click="setIsDialogOpen(false)"
+          text="Close"
+          :disabled="optionsList.length === 0"
+          @click="setIsDialogOpen(false)"
         ></v-btn>
       </v-card-actions>
     </v-card>
@@ -63,7 +96,7 @@ function setIsDialogOpen(value: boolean) {
 
 <style scoped>
 .home {
-  padding: 5% 30%;
+  padding: 1rem 25rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -76,5 +109,6 @@ function setIsDialogOpen(value: boolean) {
 
 .form-dialog {
   display: flex;
+  gap: 1rem;
 }
 </style>
