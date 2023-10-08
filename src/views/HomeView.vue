@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ThisThatSection from '@/components/ThisThatSection.vue';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 type thisThatOption = {
   text: string;
@@ -20,11 +20,6 @@ const optionsList = ref<options[]>([
     that: { text: 'That', isActive: false }
   }
 ]);
-
-watch(optionsList.value, () => {
-  const options = JSON.stringify(optionsList.value);
-  localStorage.setItem('options', options);
-});
 
 onMounted(() => {
   const options = localStorage.getItem('options');
@@ -46,6 +41,12 @@ function addThisThatSection() {
 
 function removeThisThatSection(index: number) {
   optionsList.value.splice(index, 1);
+}
+
+function closeDialog() {
+  const options = JSON.stringify(optionsList.value);
+  localStorage.setItem('options', options);
+  setIsDialogOpen(false);
 }
 </script>
 
@@ -87,7 +88,7 @@ function removeThisThatSection(index: number) {
         <v-btn
           text="Close"
           :disabled="optionsList.length === 0"
-          @click="setIsDialogOpen(false)"
+          @click="closeDialog()"
         ></v-btn>
       </v-card-actions>
     </v-card>
