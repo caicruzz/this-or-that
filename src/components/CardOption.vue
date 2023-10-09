@@ -1,31 +1,34 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, type PropType } from 'vue';
 
 type thisThatOptionType = {
   text: string;
   isActive: boolean;
-  cardStyle: string;
 }
 
-type Props = {
-  thisThatOption: thisThatOptionType;
-}
+const { thisThatOption, style } = defineProps({
+  thisThatOption: {
+    type: Object as PropType<thisThatOptionType>,
+    required: true
+  },
+  style: {
+    type: String,
+    default: 'default-card'
+  }
+});
 
-const { thisThatOption } = defineProps<Props>();
+const emit = defineEmits(['toggleActive']);
 
 const isCardActive = ref(thisThatOption.isActive);
 
-const cardClass = computed(() => {
-  return `card ${thisThatOption.cardStyle}`;
-});
-
 function toggleActive() {
   isCardActive.value = !isCardActive.value;
+  emit('toggleActive');
 }
 </script>
 
 <template>
-  <div :class="cardClass" @click="toggleActive">
+  <div :class="'card ' + style" @click="toggleActive">
     <p :class="isCardActive ? 'active-text' : 'not-active-text'">{{ thisThatOption.text }}</p>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ThisThatSection from '@/components/ThisThatSection.vue';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 
 type thisThatOption = {
   text: string;
@@ -13,6 +13,7 @@ type options = {
 };
 
 const maxOptions = 5;
+const isEditMode = ref(false);
 const isDialogOpen = ref(false);
 const optionsList = ref<options[]>([
   {
@@ -21,7 +22,7 @@ const optionsList = ref<options[]>([
   }
 ]);
 
-onMounted(() => {
+onBeforeMount(() => {
   const options = localStorage.getItem('options');
   if (options) {
     optionsList.value = JSON.parse(options);
@@ -48,11 +49,35 @@ function closeDialog() {
   localStorage.setItem('options', options);
   setIsDialogOpen(false);
 }
+
+function swithModes() {
+  const pin = parseInt(prompt('Enter pin to switch modes') || '0');
+  if (pin !== 10132046) {
+    alert('Wrong pin');
+    return;
+  }
+  isEditMode.value = !isEditMode.value;
+}
 </script>
 
 <template>
   <div class="home">
-    <v-btn color="primary" @click="setIsDialogOpen(true)"> Edit Options </v-btn>
+    <div class="heading">
+      <h1>This or That</h1>
+      <v-btn
+      color="primary"
+      @click="swithModes"
+      >
+        Switch to {{ isEditMode ? 'live' : 'edit' }} mode
+      </v-btn>
+    </div>
+    <v-btn
+    v-if="isEditMode"
+      color="primary"
+      @click="setIsDialogOpen(true)"
+    >
+      Edit Options
+    </v-btn>
     <ThisThatSection
       v-for="(options, index) in optionsList"
       :key="index"
@@ -111,5 +136,11 @@ function closeDialog() {
 .form-dialog {
   display: flex;
   gap: 1rem;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
