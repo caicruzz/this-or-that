@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue';
 
-type thisThatOptionType = {
-  text: string;
-  isActive: boolean;
-}
-
-const { thisThatOption, style } = defineProps({
-  thisThatOption: {
-    type: Object as PropType<thisThatOptionType>,
+const { text, isActive, style } = defineProps({
+  text: {
+    type: String,
     required: true
+  },
+  isActive: {
+    type: Boolean,
+    default: false
   },
   style: {
     type: String,
@@ -19,17 +17,14 @@ const { thisThatOption, style } = defineProps({
 
 const emit = defineEmits(['toggleActive']);
 
-const isCardActive = ref(thisThatOption.isActive);
-
 function toggleActive() {
-  isCardActive.value = !isCardActive.value;
-  emit('toggleActive');
+  emit('toggleActive', text);
 }
 </script>
 
 <template>
   <div :class="'card ' + style" @click="toggleActive">
-    <p :class="isCardActive ? 'active-text' : 'not-active-text'">{{ thisThatOption.text }}</p>
+    <p :class="isActive ? 'active-text' : 'not-active-text'">{{ text }}</p>
   </div>
 </template>
 

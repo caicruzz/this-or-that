@@ -1,57 +1,46 @@
 <script setup lang="ts">
 import CardOption from '@/components/CardOption.vue';
-import { ref, computed } from 'vue';
 
-type thisThatOption = {
-  text: string;
-  isActive: boolean;
+type ThisOrThat = {
+  this: string;
+  that: string;
+  active: string;
 }
 
 type Props = {
-  options: { this: thisThatOption, that: thisThatOption };
+  thisOrThat: ThisOrThat
 }
 
-const props = defineProps<Props>();
-const thisOption = ref(props.options.this);
-const thatOption = ref(props.options.that);
+const { thisOrThat } = defineProps<Props>();
 
-function onToggleActive(value: thisThatOption) {
-  if (value.text === thisOption.value.text) {
-    thisOption.value.isActive = !thisOption.value.isActive;
-  } else if (value.text === thatOption.value.text) {
-    thatOption.value.isActive = !thatOption.value.isActive;
-  }
+function onToggleActive(value: string) {
+  thisOrThat.active = value;
 }
 
-function getStyle(optionText: string) {
-  const styleMap = new Map<string, string>();
-  styleMap.set(thisOption.value.text, 'default-card');
-  styleMap.set(thatOption.value.text, 'default-card');
+function isActive(text: string) {
+  return thisOrThat.active === text;
+}
 
-  const isThisActive = thisOption.value.isActive;
-  const isThatActive = thatOption.value.isActive;
+function getStyle(text: string) {
+  if (!thisOrThat.active) return 'default-card';
 
-  if (isThisActive) {
-    styleMap.set(thatOption.value.text, 'disabled-card');
-  } else if (isThatActive) {
-    styleMap.set(thisOption.value.text, 'disabled-card');
-  }
-
-  return styleMap.get(optionText);
+  return isActive(text) ? 'default-card' : 'disabled-card';
 }
 </script>
 
 <template>
   <div class="this-that-section">
     <card-option
-        :thisThatOption="thisOption"
-        :style="getStyle(thisOption.text)"
-        @toggleActive="onToggleActive(thisOption)"
+        :text="thisOrThat.this"
+        :style="getStyle(thisOrThat.this)"
+        :is-active="isActive(thisOrThat.this)"
+        @toggle-active="onToggleActive"
     />
     <card-option
-        :thisThatOption="thatOption"
-        :style="getStyle(thatOption.text)"
-        @toggleActive="onToggleActive(thatOption)"
+        :text="thisOrThat.that"
+        :style="getStyle(thisOrThat.that)"
+        :is-active="isActive(thisOrThat.that)"
+        @toggle-active="onToggleActive"
     />
   </div>
 </template>
@@ -60,10 +49,5 @@ function getStyle(optionText: string) {
 .this-that-section {
   display: flex;
   gap: 6%;
-}
-
-.dialog {
-  background-color: #fff;
-  border: white 1px solid;
 }
 </style>

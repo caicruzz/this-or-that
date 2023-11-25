@@ -2,24 +2,11 @@
 import ThisThatSection from '@/components/ThisThatSection.vue';
 import { onBeforeMount, ref } from 'vue';
 
-type thisThatOption = {
-  text: string;
-  isActive: boolean;
-};
-
-type options = {
-  this: thisThatOption;
-  that: thisThatOption;
-};
-
 const maxOptions = 5;
 const isEditMode = ref(false);
 const isDialogOpen = ref(false);
-const optionsList = ref<options[]>([
-  {
-    this: { text: 'This', isActive: false },
-    that: { text: 'That', isActive: false }
-  }
+const optionsList = ref([
+  { this: 'this', that: 'that', active: '' }
 ]);
 
 onBeforeMount(() => {
@@ -34,10 +21,7 @@ function setIsDialogOpen(value: boolean) {
 }
 
 function addThisThatSection() {
-  optionsList.value.push({
-    this: { text: 'This', isActive: false },
-    that: { text: 'That', isActive: false }
-  });
+  optionsList.value.push({ this: 'this', that: 'that', active: '' });
 }
 
 function removeThisThatSection(index: number) {
@@ -50,12 +34,7 @@ function closeDialog() {
   setIsDialogOpen(false);
 }
 
-function swithModes() {
-  const pin = parseInt(prompt('Enter pin to switch modes') || '0');
-  if (pin !== 10132046) {
-    alert('Wrong pin');
-    return;
-  }
+function switchModes() {
   isEditMode.value = !isEditMode.value;
 }
 </script>
@@ -66,7 +45,7 @@ function swithModes() {
       <h1>This or That</h1>
       <v-btn
       color="primary"
-      @click="swithModes"
+      @click="switchModes"
       >
         Switch to {{ isEditMode ? 'live' : 'edit' }} mode
       </v-btn>
@@ -81,7 +60,7 @@ function swithModes() {
     <ThisThatSection
       v-for="(options, index) in optionsList"
       :key="index"
-      :options="options"
+      :this-or-that="options"
       class="section"
     />
   </div>
@@ -98,11 +77,14 @@ function swithModes() {
       <v-card-text>
         <div v-for="(options, index) in optionsList" :key="index" class="form-dialog">
           <v-text-field
-            v-for="(option, index) in options"
-            :key="index"
-            v-model="option.text"
-            :label="option.text"
+            v-model="options.this"
+            :label="options.this"
             required
+          ></v-text-field>
+          <v-text-field
+              v-model="options.that"
+              :label="options.that"
+              required
           ></v-text-field>
           <v-btn color="primary" @click="removeThisThatSection(index)"> Delete </v-btn>
         </div>
